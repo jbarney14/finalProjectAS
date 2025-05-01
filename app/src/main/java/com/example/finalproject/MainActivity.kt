@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        gameView = GameView(this, 2)
+        gameView = GameView(this, 5)
 
        setContentView(gameView)
     }
