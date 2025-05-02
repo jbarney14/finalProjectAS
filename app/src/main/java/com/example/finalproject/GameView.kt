@@ -13,6 +13,7 @@ import kotlin.random.Random
 class GameView : View {
 
     private var enemies = 0
+    val spawners = arrayListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 
     private lateinit var paint: Paint
     private lateinit var gameBitmap: Bitmap
@@ -36,6 +37,7 @@ class GameView : View {
         canvas.drawColor(Color.BLACK)
         gameCanvas.drawColor(Color.BLACK)
 
+        //outer lines
         paint.strokeWidth = 50f
         paint.color = Color.LTGRAY
 
@@ -60,54 +62,99 @@ class GameView : View {
         gameCanvas.drawLine(resources.displayMetrics.widthPixels.toFloat(), resources.displayMetrics.heightPixels.toFloat(), resources.displayMetrics.widthPixels.toFloat(),
             resources.displayMetrics.heightPixels.toFloat() / 2f + 200f, paint)
 
+        //inner maze
+        paint.strokeWidth = 25f
+
+        canvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 4f, resources.displayMetrics.heightPixels.toFloat() / 8f, resources.displayMetrics.widthPixels.toFloat() / (4/3f),
+            resources.displayMetrics.heightPixels.toFloat() / 8f , paint)
+        gameCanvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 4f, resources.displayMetrics.heightPixels.toFloat() / 8f, resources.displayMetrics.widthPixels.toFloat() / (4/3f),
+            resources.displayMetrics.heightPixels.toFloat() / 8f , paint)
+
+        canvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 3f, resources.displayMetrics.heightPixels.toFloat() / 4f, resources.displayMetrics.widthPixels.toFloat() / (4/3f),
+            resources.displayMetrics.heightPixels.toFloat() / 4f , paint)
+        gameCanvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 3f, resources.displayMetrics.heightPixels.toFloat() / 4f, resources.displayMetrics.widthPixels.toFloat() / (4/3f),
+            resources.displayMetrics.heightPixels.toFloat() / 4f , paint)
+
+        canvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / (4/3f) - 12f, resources.displayMetrics.heightPixels.toFloat() / 4f, resources.displayMetrics.widthPixels.toFloat() / (4/3f) - 12f,
+            resources.displayMetrics.heightPixels.toFloat() / (3/2f) , paint)
+        gameCanvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / (4/3f) - 12f, resources.displayMetrics.heightPixels.toFloat() / 4f, resources.displayMetrics.widthPixels.toFloat() / (4/3f) - 12f,
+            resources.displayMetrics.heightPixels.toFloat() / (3/2f) , paint)
+
+        canvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 3f, resources.displayMetrics.heightPixels.toFloat() / (6/5f), resources.displayMetrics.widthPixels.toFloat() / (4/3f),
+            resources.displayMetrics.heightPixels.toFloat() / (6/5f) , paint)
+        gameCanvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 3f, resources.displayMetrics.heightPixels.toFloat() / (6/5f), resources.displayMetrics.widthPixels.toFloat() / (4/3f),
+            resources.displayMetrics.heightPixels.toFloat() / (6/5f), paint)
+
+        canvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 3f + 12f, resources.displayMetrics.heightPixels.toFloat() / (6/5f), resources.displayMetrics.widthPixels.toFloat() / 3f + 12f,
+            resources.displayMetrics.heightPixels.toFloat() / (6/5f) - 925f, paint)
+        gameCanvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 3f + 12f, resources.displayMetrics.heightPixels.toFloat() / (6/5f), resources.displayMetrics.widthPixels.toFloat() / 3f + 12f,
+            resources.displayMetrics.heightPixels.toFloat() / (6/5f) - 925f, paint)
+
+
+
+
         //player
         paint.color = Color.GREEN
-        canvas.drawCircle(200f, 200f, 50f, paint)
-        gameCanvas.drawCircle(200f, 200f, 50f, paint)
+        canvas.drawCircle(100f, 125f, 37f, paint)
+        gameCanvas.drawCircle(100f, 100f, 37f, paint)
 
         //enemies - random spawn
         for(i in 0 .. enemies - 1) {
             paint.color = Color.RED
             var enemyCoordinates : Array<Int> = checkEnemyBounds()
-            canvas.drawCircle(enemyCoordinates[0].toFloat(), enemyCoordinates[1].toFloat(), 50f, paint)
+            canvas.drawCircle(enemyCoordinates[0].toFloat(), enemyCoordinates[1].toFloat(), 37f, paint)
         }
 
     }
 
     fun checkEnemyBounds(): Array<Int> {
-        val enemyCoordinates = arrayOf(0, 0)
-        var attempts = 0
-        val maxAttempts = 10000000
-        val perimeterSamples = 10000  // Number of points to sample around the perimeter
+        var enemyCoordinates = arrayOf(0, 0)
+        val randomNumber = spawners.random() //spawner place on map
 
-        while (attempts < maxAttempts) {
-            val enemyCenterX = Random.nextInt(100, resources.displayMetrics.widthPixels - 100)
-            val enemyCenterY = Random.nextInt(100, resources.displayMetrics.heightPixels - 100)
-
-            // Check if the perimeter touches anything other than the background
-            var overlap = false
-
-            for (i in 0 until perimeterSamples) {
-                val angle = 2 * Math.PI * i / perimeterSamples
-                val x = (enemyCenterX + 50 * Math.cos(angle)).toInt()
-                val y = (enemyCenterY + 50 * Math.sin(angle)).toInt()
-
-                if (gameBitmap.getPixel(x, y) != Color.BLACK) {
-                    overlap = true
-                    break
-                }
+        when (randomNumber) {
+            1 -> {
+                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
+                enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
             }
-
-            if (overlap) {
-                attempts++
-                continue
+            2 -> {
+                enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
+                enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
             }
-            // No overlap found, set the enemy's coordinates
-            enemyCoordinates[0] = enemyCenterX
-            enemyCoordinates[1] = enemyCenterY
-            break
+            3 -> {
+                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
+                enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
+            }
+            4 -> {
+                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
+                enemyCoordinates[1] = resources.displayMetrics.heightPixels / 2
+            }
+            5 -> {
+                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
+                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+            }
+            6 -> {
+                enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
+                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+            }
+            7 -> {
+                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
+                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+            }
+            8 -> {
+                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
+                enemyCoordinates[1] = resources.displayMetrics.heightPixels / 2
+            }
+            9 -> {
+                enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
+                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (4.0 / 1.5) - 100).toInt()
+            }
+            10 -> {
+                enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
+                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (4.0 / 3.5) - 300).toInt()
+            }
         }
 
+        spawners.remove(randomNumber)
         return enemyCoordinates
     }
 
