@@ -8,22 +8,38 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.Log
 import android.view.View
+import java.util.Timer
 import kotlin.random.Random
 
 class GameView : View {
 
     private var enemies = 0
     val spawners = arrayListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    var spawnOnce = 1
+    val enemyPositions = mutableListOf<Array<Int>>()
 
-    private lateinit var paint: Paint
+    private var paint: Paint
     private lateinit var gameBitmap: Bitmap
     private lateinit var gameCanvas: Canvas
-   // private lateinit var berzerk: Berzerk
+    private var berzerk: Berzerk
 
-    constructor(context : Context, enemies : Int) : super(context) {
+    var playerX = 100f
+    var playerY = 125f
+    var targetX = 100f
+    var targetY = 125f
+
+    private var main : MainActivity
+
+
+    constructor(context : Context, enemies : Int, mainActivity: MainActivity) : super(context) {
         this.enemies = enemies
         paint = Paint()
+        berzerk = Berzerk(mainActivity)
+        main = mainActivity
+
+
     }
+
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -95,69 +111,106 @@ class GameView : View {
 
         //player
         paint.color = Color.GREEN
-        canvas.drawCircle(100f, 125f, 37f, paint)
-        gameCanvas.drawCircle(100f, 100f, 37f, paint)
+        canvas.drawCircle(main.getPlayerX(), main.getPlayerY() - 134f, 37f, paint)
+        gameCanvas.drawCircle(main.getPlayerX(), main.getPlayerY() - 134f, 37f, paint)
 
         //enemies - random spawn
-        for(i in 0 .. enemies - 1) {
+
+
+
+        if (spawnOnce == 1) {
+            spawnOnce++
+            for (i in 0 until enemies) {
+                val coords = spawnEnemies()
+                enemyPositions.add(coords)
+            }
+        }
+
+        for (coords in enemyPositions) {
             paint.color = Color.RED
-            var enemyCoordinates : Array<Int> = checkEnemyBounds()
-            canvas.drawCircle(enemyCoordinates[0].toFloat(), enemyCoordinates[1].toFloat(), 37f, paint)
+            canvas.drawCircle(coords[0].toFloat(), coords[1].toFloat(), 37f, paint)
         }
+
 
     }
 
-    fun checkEnemyBounds(): Array<Int> {
-        var enemyCoordinates = arrayOf(0, 0)
-        val randomNumber = spawners.random() //spawner place on map
+    fun spawnEnemies(): Array<Int> {
+            var enemyCoordinates = arrayOf(0, 0)
+            spawnOnce = 2
+            val randomNumber = spawners.random() //spawner place on map
 
-        when (randomNumber) {
-            1 -> {
-                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
-                enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
-            }
-            2 -> {
-                enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
-                enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
-            }
-            3 -> {
-                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
-                enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
-            }
-            4 -> {
-                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
-                enemyCoordinates[1] = resources.displayMetrics.heightPixels / 2
-            }
-            5 -> {
-                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
-                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
-            }
-            6 -> {
-                enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
-                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
-            }
-            7 -> {
-                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
-                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
-            }
-            8 -> {
-                enemyCoordinates[0] = (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
-                enemyCoordinates[1] = resources.displayMetrics.heightPixels / 2
-            }
-            9 -> {
-                enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
-                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (4.0 / 1.5) - 100).toInt()
-            }
-            10 -> {
-                enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
-                enemyCoordinates[1] = (resources.displayMetrics.heightPixels / (4.0 / 3.5) - 300).toInt()
-            }
-        }
+            when (randomNumber) {
+                1 -> {
+                    enemyCoordinates[0] =
+                        (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
+                    enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
+                }
 
-        spawners.remove(randomNumber)
+                2 -> {
+                    enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
+                    enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
+                }
+
+                3 -> {
+                    enemyCoordinates[0] =
+                        (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
+                    enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
+                }
+
+                4 -> {
+                    enemyCoordinates[0] =
+                        (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
+                    enemyCoordinates[1] = resources.displayMetrics.heightPixels / 2
+                }
+
+                5 -> {
+                    enemyCoordinates[0] =
+                        (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
+                    enemyCoordinates[1] =
+                        (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+                }
+
+                6 -> {
+                    enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
+                    enemyCoordinates[1] =
+                        (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+                }
+
+                7 -> {
+                    enemyCoordinates[0] =
+                        (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
+                    enemyCoordinates[1] =
+                        (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+                }
+
+                8 -> {
+                    enemyCoordinates[0] =
+                        (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
+                    enemyCoordinates[1] = resources.displayMetrics.heightPixels / 2
+                }
+
+                9 -> {
+                    enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
+                    enemyCoordinates[1] =
+                        (resources.displayMetrics.heightPixels / (4.0 / 1.5) - 100).toInt()
+                }
+
+                10 -> {
+                    enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
+                    enemyCoordinates[1] =
+                        (resources.displayMetrics.heightPixels / (4.0 / 3.5) - 300).toInt()
+                }
+            }
+
+
+            spawners.remove(randomNumber)
         return enemyCoordinates
+
     }
 
+    fun getGame() : Berzerk {
+        return berzerk
+    }
 
 
 
