@@ -6,9 +6,11 @@ import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.Log
 import android.view.View
 import java.util.Timer
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.random.Random
 
 class GameView : View {
@@ -16,26 +18,27 @@ class GameView : View {
     private var enemies = 0
     val spawners = arrayListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     var spawnOnce = 1
+    var enemyRects = CopyOnWriteArrayList<RectF>()
+    val wallRects = CopyOnWriteArrayList<RectF>()
     val enemyPositions = mutableListOf<Array<Int>>()
+    val radius = 37f
 
     private var paint: Paint
     private lateinit var gameBitmap: Bitmap
     private lateinit var gameCanvas: Canvas
     private var berzerk: Berzerk
-
-    var playerX = 100f
-    var playerY = 125f
-    var targetX = 100f
-    var targetY = 125f
-
     private var main : MainActivity
 
 
     constructor(context : Context, enemies : Int, mainActivity: MainActivity) : super(context) {
         this.enemies = enemies
         paint = Paint()
-        berzerk = Berzerk(mainActivity)
         main = mainActivity
+
+      val  playerRect = RectF(main.getPlayerX() - radius, main.getPlayerY() - radius,
+            main.getPlayerX() + radius, main.getPlayerY() + radius )
+
+        berzerk = Berzerk(mainActivity, playerRect, enemyRects, wallRects)
 
 
     }
@@ -53,6 +56,11 @@ class GameView : View {
         canvas.drawColor(Color.BLACK)
         gameCanvas.drawColor(Color.BLACK)
 
+        paint.strokeWidth = 1f
+        paint.color = Color.RED
+        canvas.drawLine(0f, 25f, resources.displayMetrics.widthPixels.toFloat(),
+            25f, paint)
+
         //outer lines
         paint.strokeWidth = 50f
         paint.color = Color.LTGRAY
@@ -61,6 +69,8 @@ class GameView : View {
             0f, paint)
         gameCanvas.drawLine(0f, 0f, resources.displayMetrics.widthPixels.toFloat(),
             0f, paint)
+        wallRects.add(RectF(0f, -25f, resources.displayMetrics.widthPixels.toFloat(), 25f))
+
         canvas.drawLine(0f, 0f, 0f,
             resources.displayMetrics.heightPixels.toFloat(), paint)
         gameCanvas.drawLine(0f, 0f, 0f,
@@ -106,18 +116,12 @@ class GameView : View {
         gameCanvas.drawLine(resources.displayMetrics.widthPixels.toFloat() / 3f + 12f, resources.displayMetrics.heightPixels.toFloat() / (6/5f), resources.displayMetrics.widthPixels.toFloat() / 3f + 12f,
             resources.displayMetrics.heightPixels.toFloat() / (6/5f) - 925f, paint)
 
-
-
-
         //player
         paint.color = Color.GREEN
-        canvas.drawCircle(main.getPlayerX(), main.getPlayerY() - 134f, 37f, paint)
-        gameCanvas.drawCircle(main.getPlayerX(), main.getPlayerY() - 134f, 37f, paint)
+        canvas.drawCircle(main.getPlayerX(), main.getPlayerY() - 134f, radius, paint)
+        gameCanvas.drawCircle(main.getPlayerX(), main.getPlayerY() - 134f, radius, paint)
 
         //enemies - random spawn
-
-
-
         if (spawnOnce == 1) {
             spawnOnce++
             for (i in 0 until enemies) {
@@ -127,8 +131,10 @@ class GameView : View {
         }
 
         for (coords in enemyPositions) {
+            var enemyRect = RectF()
             paint.color = Color.RED
-            canvas.drawCircle(coords[0].toFloat(), coords[1].toFloat(), 37f, paint)
+            canvas.drawCircle(coords[0].toFloat(), coords[1].toFloat(), radius, paint)
+
         }
 
 

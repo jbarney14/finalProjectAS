@@ -1,23 +1,39 @@
 package com.example.finalproject
 
+import android.graphics.Bitmap
 import android.graphics.Point
+import android.graphics.RectF
 import android.util.Log
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.sqrt
 
 class Berzerk {
 
     private var main : MainActivity
+    private var playerRect : RectF
+    private var enemyRects: CopyOnWriteArrayList<RectF>
+    private var wallRects: CopyOnWriteArrayList<RectF>
 
-    constructor(mainActivity : MainActivity) {
+    constructor(mainActivity : MainActivity, playerRect : RectF,
+                enemyRects : CopyOnWriteArrayList<RectF>, wallRects : CopyOnWriteArrayList<RectF>) {
         main = mainActivity
+        this.playerRect = playerRect
+        this.enemyRects = enemyRects
+        this.wallRects = wallRects
     }
 
-    fun movePlayer(newX: Float, newY: Float) {
+    fun update() {
+        movePlayer()
+        checkCollisions()
+
+    }
+
+    fun movePlayer() {
         val currentX = main.getPlayerX()
         val currentY = main.getPlayerY()
 
-        val targetX = newX
-        val targetY = newY
+        val targetX = main.xReq
+        val targetY = main.yReq
 
         // Movement speed
         val moveSpeed = 40f
@@ -45,6 +61,16 @@ class Berzerk {
             main.setPlayerX(targetX)
             main.setPlayerY(targetY)
             main.updateView()
+        }
+    }
+
+    fun checkCollisions() {
+        for(rect in wallRects) {
+            Log.w("MainActivity", "wall: " + rect.toShortString())
+            Log.w("MainActivity", "player: " + playerRect.toShortString())
+            if(RectF.intersects(playerRect, rect)) {
+                Log.w("MainActivity", "hit!")
+            }
         }
     }
 

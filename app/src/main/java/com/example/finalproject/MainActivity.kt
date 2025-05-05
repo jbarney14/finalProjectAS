@@ -18,8 +18,8 @@ class MainActivity : AppCompatActivity() {
     private var xPos = 100f
     private var yPos = 259f
 
-    private var xReq = 100f
-    private var yReq = 259f
+    var xReq = 100f
+    var yReq = 259f
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,10 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     fun updateModel() {
         var game = gameView.getGame()
-
-          game.movePlayer(xReq, yReq)
-
-
+        game.update()
     }
 
     fun updateView() {
