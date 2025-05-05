@@ -13,6 +13,7 @@ import java.util.Timer
 class MainActivity : AppCompatActivity() {
 
     private lateinit var gameView: GameView
+    //private lateinit var gameView2: GameView
     private lateinit var gestureDetector: GestureDetector
     private var clickCheck = false
     private var xPos = 100f
@@ -40,8 +41,10 @@ class MainActivity : AppCompatActivity() {
         })
 
         gameView = GameView(this, 4, this)
+        //gameView2 = GameView(this, 4, this)
 
         setContentView(gameView)
+        //setContentView(gameView2)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
