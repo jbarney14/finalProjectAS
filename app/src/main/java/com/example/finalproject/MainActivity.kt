@@ -45,6 +45,9 @@ class MainActivity : AppCompatActivity() {
 
         setContentView(gameView)
         //setContentView(gameView2)
+
+        //Test Game Over Screen()
+        //showGameOverScreen()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -88,6 +91,22 @@ class MainActivity : AppCompatActivity() {
 
     fun setPlayerY(y : Float) {
         yPos = y
+    }
+
+    fun restartGame() {
+        xPos = 100f
+        yPos = 259f
+        xReq = 100f
+        yReq = 259f
+
+        gameView = GameView(this, 4, this)
+        setContentView(gameView)
+        setTimer()
+    }
+
+    fun showGameOverScreen() {
+        val gameOverView = GameView3(this, this)
+        setContentView(gameOverView)
     }
 
 }
