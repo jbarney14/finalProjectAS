@@ -10,7 +10,8 @@ import androidx.core.view.WindowInsetsCompat
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var gameView: GameView
+    //private lateinit var gameView: GameView
+    private lateinit var gameView2: GameView2
     private lateinit var gestureDetector: GestureDetector
 
 
@@ -29,9 +30,11 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        gameView = GameView(this, 4)
+        //gameView = GameView(this, 4)
+        gameView2 = GameView2(this, 4)
 
-        setContentView(gameView)
+        //setContentView(gameView)
+        setContentView(gameView2)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
