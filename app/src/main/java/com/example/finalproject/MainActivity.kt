@@ -13,6 +13,7 @@ import java.util.Timer
 class MainActivity : AppCompatActivity() {
 
     private lateinit var gameView: GameView
+    //private lateinit var gameView2: GameView
     private lateinit var gestureDetector: GestureDetector
     private var clickCheck = false
     private var xPos = 100f
@@ -40,8 +41,13 @@ class MainActivity : AppCompatActivity() {
         })
 
         gameView = GameView(this, 4, this)
+        //gameView2 = GameView(this, 4, this)
 
         setContentView(gameView)
+        //setContentView(gameView2)
+
+        //Test Game Over Screen()
+        //showGameOverScreen()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -82,6 +88,22 @@ class MainActivity : AppCompatActivity() {
 
     fun setPlayerY(y : Float) {
         yPos = y
+    }
+
+    fun restartGame() {
+        xPos = 100f
+        yPos = 259f
+        xReq = 100f
+        yReq = 259f
+
+        gameView = GameView(this, 4, this)
+        setContentView(gameView)
+        setTimer()
+    }
+
+    fun showGameOverScreen() {
+        val gameOverView = GameView3(this, this)
+        setContentView(gameOverView)
     }
 
 }
