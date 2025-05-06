@@ -1,79 +1,113 @@
 package com.example.finalproject
 
 import android.graphics.Bitmap
-import android.graphics.Point
+import android.graphics.Color
 import android.graphics.RectF
 import android.util.Log
-import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.math.sqrt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-class Berzerk {
+class Berzerk(
+    private val main: MainActivity,
+    private val enemyRects: List<RectF>,
+    private val gameBitmap: Bitmap,
+    private val width : Int,
+    private val height : Int
+) {
 
-    private var main : MainActivity
-    private var playerRect : RectF
-    private var enemyRects: CopyOnWriteArrayList<RectF>
-    private var wallRects: CopyOnWriteArrayList<RectF>
-
-    constructor(mainActivity : MainActivity, playerRect : RectF,
-                enemyRects : CopyOnWriteArrayList<RectF>, wallRects : CopyOnWriteArrayList<RectF>) {
-        main = mainActivity
-        this.playerRect = playerRect
-        this.enemyRects = enemyRects
-        this.wallRects = wallRects
-    }
+    var delayInMillis = 0L
+    var colis = false
 
     fun update() {
         movePlayer()
-        checkCollisions()
-
+        playerCollisions()
+        printColis()
     }
 
     fun movePlayer() {
-        val currentX = main.getPlayerX()
-        val currentY = main.getPlayerY()
+        val dx = main.xReq - main.xPos
+        val dy = main.yReq - main.yPos
+        val dist = Math.hypot(dx.toDouble(), dy.toDouble())
 
-        val targetX = main.xReq
-        val targetY = main.yReq
+        val delayInSeconds = dist / 400f
+        delayInMillis = (delayInSeconds * 1000).toLong()
 
-        // Movement speed
-        val moveSpeed = 40f
 
-        // Calculate the delta (distance) to move
-        val deltaX = targetX - currentX
-        val deltaY = targetY - currentY
-
-        // Calculate the distance to the target point
-        val distance = Math.sqrt((deltaX * deltaX + deltaY * deltaY).toDouble()).toFloat()
-
-        // If the distance is greater than moveSpeed, keep moving the player
-        if (distance > moveSpeed) {
-            val moveX = (deltaX / distance) * moveSpeed
-            val moveY = (deltaY / distance) * moveSpeed
-
-            // Update player position
-            main.setPlayerX(currentX + moveX)
-            main.setPlayerY(currentY + moveY)
-
-            // Redraw the view
-            main.updateView()
+        val speed = 40f
+        if (dist > speed) {
+            val angle = Math.atan2(dy.toDouble(), dx.toDouble())
+            main.xPos += (Math.cos(angle) * speed).toFloat()
+            main.yPos += (Math.sin(angle) * speed).toFloat()
         } else {
-            // If we're close enough, set the player's position to the target
-            main.setPlayerX(targetX)
-            main.setPlayerY(targetY)
-            main.updateView()
+            main.xPos = main.xReq
+            main.yPos = main.yReq
         }
     }
 
-    fun checkCollisions() {
-        for(rect in wallRects) {
-            Log.w("MainActivity", "wall: " + rect.toShortString())
-            Log.w("MainActivity", "player: " + playerRect.toShortString())
-            if(RectF.intersects(playerRect, rect)) {
-                Log.w("MainActivity", "hit!")
+    fun playerCollisions(): Boolean {
+        Log.w("MainActivity", enemyRects.toString())
+
+        val x = main.xPos.toInt()
+        val y = main.yPos.toInt()
+        val r = main.radius.toInt()
+
+        val edgePoints = listOf(
+            Pair(x - r, y),     // Left
+            Pair(x + r, y),     // Right
+            Pair(x, y - r),     // Top
+            Pair(x, y + r),     // Bottom
+            Pair(x - r, y - r), // Top-left
+            Pair(x + r, y - r), // Top-right
+            Pair(x - r, y + r), // Bottom-left
+            Pair(x + r, y + r)  // Bottom-right
+        )
+
+        for ((px, py) in edgePoints) {
+            // Bounds check
+            if (px in 0 until gameBitmap.width && py in 0 until gameBitmap.height) {
+                try {
+                    val color = gameBitmap.getPixel(px, py)
+                    when (color) {
+                        Color.LTGRAY -> {
+                            Log.d("MainActivity", "Collision with wall at ($px, $py)")
+                            CoroutineScope(Dispatchers.Main).launch {
+                                delay(delayInMillis)
+                                main.xPos = 100f
+                                main.xReq = 100f
+                                main.yPos = 123f
+                                main.yReq = 123f
+                                colis = true
+                            }
+                        }
+
+                        Color.RED -> {
+                            Log.d("MainActivity", "Collision with enemy at ($px, $py)")
+                            // Handle enemy hit logic
+                            return true
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "Error reading pixel: ${e.message}")
+                }
             }
         }
+        return false
+    }
+
+    fun printColis(): Boolean {
+        if(colis) {
+            colis = false
+            return true
+        } else {
+            return false
+        }
     }
 
 
 
-}
+
+    }
+
+

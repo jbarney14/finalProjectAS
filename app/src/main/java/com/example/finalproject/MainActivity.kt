@@ -16,11 +16,13 @@ class MainActivity : AppCompatActivity() {
     //private lateinit var gameView2: GameView
     private lateinit var gestureDetector: GestureDetector
     private var clickCheck = false
-    private var xPos = 100f
-    private var yPos = 259f
+    var xPos = 100f
+    var yPos = 123f
 
     var xReq = 100f
-    var yReq = 259f
+    var yReq = 123f
+
+    var radius = 37f
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,14 +35,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
-                clickCheck = true
                 xReq = e.x
-                yReq = e.y
+                yReq = e.y - 136
                 return true
             }
         })
 
         gameView = GameView(this, 4, this)
+        radius = gameView.radius
         //gameView2 = GameView(this, 4, this)
 
         setContentView(gameView)
