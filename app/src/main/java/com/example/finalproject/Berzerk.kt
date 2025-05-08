@@ -47,7 +47,7 @@ class Berzerk(
     }
 
     fun playerCollisions(): Boolean {
-        Log.w("MainActivity", enemyRects.toString())
+        //Log.w("MainActivity", enemyRects.toString())
 
         val x = main.xPos.toInt()
         val y = main.yPos.toInt()
