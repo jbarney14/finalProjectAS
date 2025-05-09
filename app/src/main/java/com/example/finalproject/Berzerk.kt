@@ -14,7 +14,12 @@ class Berzerk(
     private val enemyRects: List<RectF>,
     private val gameBitmap: Bitmap,
     private val width : Int,
-    private val height : Int
+    private val height : Int,
+    /*
+    // Flag to determine what level player is on, so reaching the goal leads to level 2 or the finish screen
+    private var level2 : Boolean = false
+
+     */
 ) {
 
     var delayInMillis = 0L
@@ -95,6 +100,34 @@ class Berzerk(
                             // Handle enemy hit logic
                             return true
                         }
+
+                        Color.BLUE -> {
+                            // Going from level 1 to level 2
+                            if (main.onLevel2 == false) {
+                                Log.w("Berzerk.kt", "Hit the blue end of game")
+                                main.runOnUiThread {
+                                    main.startGameView2()
+                                }
+
+                                main.xPos = 100f
+                                main.bulletx = 100f
+                                main.xReq = 100f
+                                main.bulletxReq = 100f
+                                main.yPos = 123f
+                                main.bullety = 123f
+                                main.yReq = 123f
+                                main.bulletyReq = 123f
+
+                                colis = true
+                                main.onLevel2 = true
+
+                                // Return value?
+                            } else {
+                                // Go to game won screen
+                            }
+
+
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e("MainActivity", "Error reading pixel: ${e.message}")
@@ -143,10 +176,7 @@ class Berzerk(
                             return true
                         }
 
-                        Color.BLUE -> {
-                            main.modifyData()
 
-                        }
                     }
                 } catch (e: Exception) {
                     Log.e("MainActivity", "Error reading pixel: ${e.message}")

@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
+import android.os.Bundle
 import android.view.View
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -23,15 +24,29 @@ class GameView2 : View {
     private lateinit var gameBitmap: Bitmap
     private lateinit var gameCanvas: Canvas
     private lateinit var berzerk: Berzerk
-    private var main : MainActivity
+    private var main: MainActivity
 
 
-    constructor(context : Context, enemies : Int, mainActivity: MainActivity) : super(context) {
+    constructor(context: Context, enemies: Int, mainActivity: MainActivity) : super(context) {
         this.enemies = enemies
         paint = Paint()
         main = mainActivity
+
+        val width = resources.displayMetrics.widthPixels
+        val height = resources.displayMetrics.heightPixels
+
+        gameBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        gameCanvas = Canvas(gameBitmap)
+
+        berzerk = Berzerk(main, enemyRects, gameBitmap, width, height)
     }
 
+    /*
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+    }
+})
+*/
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -39,6 +54,7 @@ class GameView2 : View {
         gameCanvas = Canvas(gameBitmap)
 
         berzerk = Berzerk(main, enemyRects, gameBitmap, width, height)
+        //main.setTimer()
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -168,6 +184,11 @@ class GameView2 : View {
         }
 
         canvas.drawBitmap(gameBitmap, 0f, 0f, null)
+
+        /*
+        gameBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+        gameCanvas = Canvas(gameBitmap)
+         */
     }
 
     fun spawnEnemies(): Array<Int> {

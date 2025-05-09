@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
@@ -13,7 +14,7 @@ import java.util.Timer
 class MainActivity : AppCompatActivity() {
 
     private lateinit var gameView: GameView
-    //private lateinit var gameView2: GameView
+    private lateinit var gameView2: GameView2
     private lateinit var gestureDetector: GestureDetector
     private var clickCheck = false
     var xPos = 100f
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     var radius = 37f
 
     var fired = false
+
+    var onLevel2 = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +57,7 @@ class MainActivity : AppCompatActivity() {
 
         gameView = GameView(this, 4, this)
         radius = gameView.radius
-        //gameView2 = GameView(this, 4, this)
+        gameView2 = GameView2(this, 4, this)
 
         setContentView(gameView)
         //setContentView(gameView2)
@@ -67,13 +70,26 @@ class MainActivity : AppCompatActivity() {
         return gestureDetector.onTouchEvent(event)
     }
 
+    fun startGameView2() {
+        setContentView(GameView2(this, 4, this))
+    }
+
     fun updateModel() {
-        var game = gameView.getGame()
-        game.update()
+        if (onLevel2 == false) {
+            var game = gameView.getGame()
+            game.update()
+        } else {
+            val game2 = gameView2.getGame()
+            game2.update()
+        }
     }
 
     fun updateView() {
-        gameView.postInvalidate()
+        if (onLevel2 == false) {
+            gameView.postInvalidate()
+        } else {
+            gameView2.postInvalidate()
+        }
     }
 
     override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -111,4 +127,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(gameOverView)
     }
 
+    /*
+    fun modifyData() {
+        var intent = Intent(this, GameActivity::class.java)
+        startActivity(intent)
+    }
+    */
 }
