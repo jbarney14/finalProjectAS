@@ -38,6 +38,8 @@ class MainActivity : AppCompatActivity() {
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 fired = true
+                bulletx = xPos
+                bullety = yPos
                 bulletxReq = e.x
                 bulletyReq = e.y - 136
                 return true
@@ -82,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     fun setTimer() {
         val timer = Timer()
         val task = GameTimerTask( this )
-        timer.schedule( task, 0, 100 )
+        timer.schedule( task, 0, 16)
     }
 
     fun getPlayerX() : Float {

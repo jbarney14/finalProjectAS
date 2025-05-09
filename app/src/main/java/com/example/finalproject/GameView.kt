@@ -108,8 +108,10 @@ class GameView : View {
         }
 
         //player bullet
+        if(main.fired) {
                 paint.color = Color.GREEN
                 gameCanvas.drawCircle(main.bulletx, main.bullety, radius / 2, paint)
+            }
 
 
 
