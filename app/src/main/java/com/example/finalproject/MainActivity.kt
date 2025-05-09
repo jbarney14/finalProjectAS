@@ -22,15 +22,26 @@ class MainActivity : AppCompatActivity() {
     var xReq = 100f
     var yReq = 123f
 
+    var bulletx = 100f
+    var bullety = 123f
+
+    var bulletxReq = 100f
+    var bulletyReq = 123f
+
     var radius = 37f
 
+    var fired = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
-                // fireBullet()
+                fired = true
+                bulletx = xPos
+                bullety = yPos
+                bulletxReq = e.x
+                bulletyReq = e.y - 136
                 return true
             }
 
@@ -73,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     fun setTimer() {
         val timer = Timer()
         val task = GameTimerTask( this )
-        timer.schedule( task, 0, 100 )
+        timer.schedule( task, 0, 16)
     }
 
     fun getPlayerX() : Float {
@@ -82,14 +93,6 @@ class MainActivity : AppCompatActivity() {
 
     fun getPlayerY() : Float {
         return yPos
-    }
-
-    fun setPlayerX(x : Float) {
-        xPos = x
-    }
-
-    fun setPlayerY(y : Float) {
-        yPos = y
     }
 
     fun restartGame() {

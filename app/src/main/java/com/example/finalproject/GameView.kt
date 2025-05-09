@@ -22,6 +22,7 @@ class GameView : View {
     val enemyPositions = mutableListOf<Array<Int>>()
     val radius = 37f
 
+
     private var paint: Paint
     private lateinit var gameBitmap: Bitmap
     private lateinit var gameCanvas: Canvas
@@ -113,6 +114,15 @@ class GameView : View {
             paint.color = Color.WHITE
             gameCanvas.drawCircle(main.getPlayerX(), main.getPlayerY(), radius, paint)
         }
+
+        //player bullet
+        if(main.fired) {
+                paint.color = Color.GREEN
+                gameCanvas.drawCircle(main.bulletx, main.bullety, radius / 2, paint)
+            }
+
+
+
 
         //enemies - random spawn
         if (spawnOnce == 1) {
