@@ -76,10 +76,18 @@ class GameView2 : View {
         gameCanvas.drawLine(width.toFloat(), height.toFloat(), width.toFloat(),
             height.toFloat() / 2f + 200f, paint)
 
+        // Goal
+        paint.strokeWidth = 50f
+        paint.color = Color.BLUE
+
+        gameCanvas.drawLine(width.toFloat(), height.toFloat() / 2f - 200f, width.toFloat(),
+            height.toFloat() / 2f + 200f, paint)
+
 
         // Inner Lines
         //outer lines
         paint.strokeWidth = 25f
+        paint.color = Color.LTGRAY
 
         val width = resources.displayMetrics.widthPixels.toFloat()
         val height = resources.displayMetrics.heightPixels.toFloat()

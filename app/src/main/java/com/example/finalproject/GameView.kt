@@ -79,8 +79,16 @@ class GameView : View {
         gameCanvas.drawLine(width.toFloat(), height.toFloat(), width.toFloat(),
             height.toFloat() / 2f + 200f, paint)
 
+        // Goal
+        paint.strokeWidth = 50f
+        paint.color = Color.BLUE
+
+        gameCanvas.drawLine(width.toFloat(), height.toFloat() / 2f - 200f, width.toFloat(),
+            height.toFloat() / 2f + 200f, paint)
+
         //inner maze
         paint.strokeWidth = 25f
+        paint.color = Color.LTGRAY
 
         gameCanvas.drawLine(width.toFloat() / 4f, height.toFloat() / 8f, width.toFloat() / (4/3f),
             height.toFloat() / 8f , paint)

@@ -87,6 +87,11 @@ class Berzerk(
                             // Handle enemy hit logic
                             return true
                         }
+
+                        Color.BLUE -> {
+                            main.modifyData()
+
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e("MainActivity", "Error reading pixel: ${e.message}")
