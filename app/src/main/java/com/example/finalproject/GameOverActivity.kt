@@ -15,7 +15,7 @@ class GameOverActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_over)
 
-        // Add AdView (same as CMSC436 example)
+
         var adView = AdView(this)
         var adSize = AdSize(AdSize.FULL_WIDTH, AdSize.AUTO_HEIGHT)
         adView.setAdSize(adSize)
@@ -30,7 +30,7 @@ class GameOverActivity : AppCompatActivity() {
         var request = builder.build()
         adView.loadAd(request)
 
-        // Tap to Replay -> restart game
+
         val tapText = findViewById<TextView>(R.id.tapToReplay)
         val ratingBar = findViewById<RatingBar>(R.id.ratingBar)
         tapText.setOnClickListener {

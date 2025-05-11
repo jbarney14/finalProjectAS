@@ -34,13 +34,13 @@
         android:rating="4"
         android:layout_marginTop="40dp" />
 
-    <!-- Fill space -->
+
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- Banner ad -->
+
     <LinearLayout
         android:id="@+id/ad_view"
         android:orientation="horizontal"

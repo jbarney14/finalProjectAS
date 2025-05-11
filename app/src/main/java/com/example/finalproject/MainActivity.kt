@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         //setContentView(gameView2)
 
         //Test Game Over Screen()
-        showGameOverScreen()
+        //showGameOverScreen()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
