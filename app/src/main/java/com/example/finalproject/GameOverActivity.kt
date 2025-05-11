@@ -1,0 +1,41 @@
+package com.example.finalproject
+
+import android.os.Bundle
+import android.widget.LinearLayout
+import android.widget.RatingBar
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+
+class GameOverActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_game_over)
+
+        // Add AdView (same as CMSC436 example)
+        var adView = AdView(this)
+        var adSize = AdSize(AdSize.FULL_WIDTH, AdSize.AUTO_HEIGHT)
+        adView.setAdSize(adSize)
+        adView.adUnitId = "ca-app-pub-3940256099942544/6300978111"
+
+        var adLayout = findViewById<LinearLayout>(R.id.ad_view)
+        adLayout.addView(adView)
+
+        var builder = AdRequest.Builder()
+        builder.addKeyword("games")
+        builder.addKeyword("fun")
+        var request = builder.build()
+        adView.loadAd(request)
+
+        // Tap to Replay -> restart game
+        val tapText = findViewById<TextView>(R.id.tapToReplay)
+        val ratingBar = findViewById<RatingBar>(R.id.ratingBar)
+        tapText.setOnClickListener {
+            MainActivity.instance?.restartGame()
+            finish()
+        }
+    }
+}

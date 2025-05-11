@@ -35,8 +35,13 @@ class MainActivity : AppCompatActivity() {
 
     var onLevel2 = false
 
+    companion object {
+        var instance: MainActivity? = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        instance = this
 
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
@@ -63,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         //setContentView(gameView2)
 
         //Test Game Over Screen()
-        //showGameOverScreen()
+        showGameOverScreen()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -123,8 +128,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun showGameOverScreen() {
-        val gameOverView = GameView3(this, this)
-        setContentView(gameOverView)
+        val intent = Intent(this, GameOverActivity::class.java)
+        startActivity(intent)
     }
 
     /*
