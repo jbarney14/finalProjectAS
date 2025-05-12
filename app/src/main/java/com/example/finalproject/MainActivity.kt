@@ -42,9 +42,13 @@ class MainActivity : AppCompatActivity() {
 
     var playerHasMoved = false
 
-    var playerGameWon = false
-    var playerGameOver = false
-    var isTransitioning = false
+    var playerGameWon : Boolean = false
+    var playerGameOver : Boolean = false
+    var isTransitioning : Boolean = false
+
+    var score : Int = 0
+    var lives : Int = 3
+
 
     companion object {
         var instance: MainActivity? = null
@@ -81,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         //setContentView(gameView2)
 
         //Test Game Over Screen()
-        showGameOverScreen()
+        //showGameOverScreen()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {

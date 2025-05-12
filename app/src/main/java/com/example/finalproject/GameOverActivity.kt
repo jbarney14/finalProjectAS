@@ -17,6 +17,15 @@ class GameOverActivity : AppCompatActivity() {
 
     private var showSnackbarAfterEmail = false
 
+    private lateinit var scoreTextView: TextView
+    private lateinit var leaderboardButton: Button
+
+    private var playerName: String = ""
+    private var finalScore: Int = 0
+    private var livesRemaining: Int = 0
+    private var timeUsed: Long = 0
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_over)
@@ -68,6 +77,14 @@ class GameOverActivity : AppCompatActivity() {
             ratingBar.isEnabled = false
             //submitButton.isEnabled = false
         }
+
+        scoreTextView = findViewById<TextView>(R.id.scoreTextView)
+        leaderboardButton = findViewById<Button>(R.id.leaderboardButton)
+
+        //val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
+        //playerName = prefs.getString("playerName", "Player") ?: "Player"
+
+
 
 
     }
