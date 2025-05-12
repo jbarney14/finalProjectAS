@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.RectF
 import android.util.Log
+import android.widget.TextView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -40,6 +41,8 @@ class Berzerk(
     val enemyBulletXReq = FloatArray(10) { 0f }
     val enemyBulletYReq = FloatArray(10) { 0f }
     val enemyBulletActive = BooleanArray(10) { false }
+
+    var gonextlevel = false
 
     init {
         for ((rect, positionID) in enemyRects) {
@@ -83,6 +86,8 @@ class Berzerk(
     }
 
     fun playerCollisions() {
+
+        if (main.playerGameOver) return
 
         val x = main.xPos.toInt()
         val y = main.yPos.toInt()
@@ -146,8 +151,11 @@ class Berzerk(
 
                         Color.BLUE -> {
                             // Going from level 1 to level 2
-                            if (main.onLevel2 == false) {
+                            Log.w("Test", "OnLevel2= ${main.onLevel2}")
+
+                            if (main.onLevel2 == false && !main.isTransitioning) {
                                 Log.w("Berzerk.kt", "Hit the blue end of game")
+                                main.isTransitioning = true
                                 main.runOnUiThread {
                                     main.startGameView2()
                                 }
@@ -160,14 +168,22 @@ class Berzerk(
                                 main.bullety = 123f
                                 main.yReq = 123f
                                 main.bulletyReq = 123f
-
+                                gonextlevel = true
+                                lives += 1
                                 colis = true
                                 main.onLevel2 = true
                                 main.playerHasMoved = false
 
                                 // Return value?
-                            } else {
+                            } else if (main.onLevel2 && !main.isTransitioning){
                                 // Go to game won screen
+                                colis = true
+                                main.isTransitioning = true
+                                main.playerGameWon = true
+                                main.playerGameOver = true
+                                main.runOnUiThread {
+                                    main.showGameOverScreen()
+                                }
                             }
 
 
@@ -290,8 +306,20 @@ class Berzerk(
 
     fun printColis(): Boolean {
         if (colis) {
-            lives = lives -1
+            if (!gonextlevel) {
+                lives = lives - 1
+            }
+            Log.w("Test Lives", "Lives: $lives")
             colis = false
+
+            if (lives <= 0) {
+                main.playerGameOver = true
+                main.isTransitioning = true
+                main.runOnUiThread {
+                    main.showGameOverScreen()
+                }
+                return false
+            }
             return true
         } else {
             return false

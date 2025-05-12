@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity() {
 
     var playerHasMoved = false
 
+    var playerGameWon = false
+    var playerGameOver = false
+    var isTransitioning = false
+
     companion object {
         var instance: MainActivity? = null
     }
@@ -86,6 +90,7 @@ class MainActivity : AppCompatActivity() {
 
     fun startGameView2() {
         setContentView(gameView2)
+        isTransitioning = false
     }
 
     fun updateModel() {
@@ -133,6 +138,10 @@ class MainActivity : AppCompatActivity() {
         yPos = 123f
         xReq = 100f
         yReq = 123f
+        isTransitioning = false
+        onLevel2 = false
+        playerGameWon = false
+        playerGameOver = false
 
         gameView = GameView(this, 4, this)
         setContentView(gameView)
