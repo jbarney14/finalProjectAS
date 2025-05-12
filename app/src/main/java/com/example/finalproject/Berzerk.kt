@@ -27,9 +27,9 @@ class Berzerk(
 
     var bulletonScreen = true
 
-    var enemyShoot = false
-
     var angle = 0.0
+
+    var lives = 3
 
     var hitList = arrayListOf(0)
 
@@ -71,7 +71,7 @@ class Berzerk(
         delayInMillis = (delayInSeconds * 1000).toLong()
 
 
-        val speed = 5f
+        val speed = 3f
         if (dist > speed) {
             angle = Math.atan2(dy.toDouble(), dx.toDouble())
             main.xPos += (Math.cos(angle) * speed).toFloat()
@@ -117,6 +117,11 @@ class Berzerk(
                             main.bulletyReq = 123f
                             colis = true
 
+                            for (i in enemyBulletActive.indices) {
+                                enemyBulletActive[i] = false  // Stop all active enemy bullets
+                                colis = true
+                            }
+                            main.playerHasMoved = false
                         }
 
                         Color.RED -> {
@@ -129,6 +134,14 @@ class Berzerk(
                             main.bullety = 123f
                             main.yReq = 123f
                             main.bulletyReq = 123f
+                            colis = true
+
+                            for (i in enemyBulletActive.indices) {
+                                enemyBulletActive[i] = false  // Stop all active enemy bullets
+                                colis = true
+                            }
+
+                            main.playerHasMoved = false
                         }
 
                         Color.BLUE -> {
@@ -150,6 +163,7 @@ class Berzerk(
 
                                 colis = true
                                 main.onLevel2 = true
+                                main.playerHasMoved = false
 
                                 // Return value?
                             } else {
@@ -246,7 +260,10 @@ class Berzerk(
                                 // Deactivate all enemy bullets
                                 for (i in enemyBulletActive.indices) {
                                     enemyBulletActive[i] = false  // Stop all active enemy bullets
+                                    colis = true
                                 }
+
+                                main.playerHasMoved = false
 
                                 // Reset the player position and other properties
                                 main.xPos = 100f
@@ -273,6 +290,7 @@ class Berzerk(
 
     fun printColis(): Boolean {
         if (colis) {
+            lives = lives -1
             colis = false
             return true
         } else {
@@ -287,7 +305,7 @@ class Berzerk(
             val dy = main.bulletyReq - main.yPos
             val dist = Math.hypot(dx.toDouble(), dy.toDouble())
 
-            val speed = 5f
+            val speed = 3f
             if (dist > speed) {
                 val angle = Math.atan2(dy.toDouble(), dx.toDouble())
                 main.bulletx += (Math.cos(angle) * speed).toFloat()
@@ -349,7 +367,7 @@ class Berzerk(
 
 
         fun moveEnemyBullet() {
-            val speed = 3f
+            val speed = 2f
             for (i in enemyBulletActive.indices) {
                 if (enemyBulletActive[i]) {
                     val dx = enemyBulletXReq[i] - enemyBulletX[i]

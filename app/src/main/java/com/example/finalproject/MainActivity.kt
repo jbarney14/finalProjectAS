@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
     fun setTimer() {
         val timer = Timer()
         val task = GameTimerTask( this )
-        timer.schedule( task, 0, 3)
+        timer.schedule( task, 0, 1)
     }
 
     fun getPlayerX() : Float {
