@@ -397,7 +397,7 @@ class Berzerk(
                             enemyBulletYReq[i] = main.yPos
                             enemyBulletActive[i] = true
 
-                            enemyCooldown[positionID] = 300  // Cooldown for 1 second at 60 FPS
+                            enemyCooldown[positionID] = 600  // Cooldown for 1 second at 60 FPS
                             break
                         }
                     }

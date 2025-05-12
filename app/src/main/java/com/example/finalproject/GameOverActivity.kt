@@ -11,6 +11,7 @@ import com.google.android.gms.ads.AdView
 import com.google.android.material.snackbar.Snackbar
 import android.widget.Toast
 import android.content.Intent
+import android.graphics.Color
 import android.os.SystemClock
 import android.util.Log
 import android.widget.Button
@@ -125,10 +126,12 @@ class GameOverActivity : AppCompatActivity() {
         timePlayed = (SystemClock.elapsedRealtime() - startTime) / 1000
 
         scoreTextView.text = "Player: $playerName\nScore: $finalScore\nLives: $livesRemaining"
+        scoreTextView.setTextColor(Color.GREEN)
+
         uploadGameStatsToFirebase()
 
         chronometer.base = SystemClock.elapsedRealtime() - (timePlayed * 1000)
-        chronometer.start()
+       // chronometer.start()
 
         leaderboardButton.setOnClickListener {
             startActivity(Intent(this, LeaderboardActivity::class.java))
@@ -155,7 +158,7 @@ class GameOverActivity : AppCompatActivity() {
     private fun uploadGameStatsToFirebase() {
         val db = FirebaseDatabase.getInstance().getReference("Leaderboard")
         val playerRef = db.child(playerName)
-        Log.d("FirebaseDebug", "Inside updateData, player: $playerName")
+        Log.w("MainActivity", "Inside updateData, player: $playerName")
 
         playerRef.child("highScore").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -163,7 +166,7 @@ class GameOverActivity : AppCompatActivity() {
                 if (finalScore > existingHighScore) {
                     playerRef.child("highScore").setValue(finalScore)
                     playerRef.child("timeForHighScore").setValue(timePlayed)
-                    Log.d("FirebaseDebug", "Player: $playerName Score:$finalScore")
+                    Log.w("MainActivity", "Player: $playerName Score:$finalScore")
                 }
             }
 
