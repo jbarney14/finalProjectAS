@@ -2,6 +2,7 @@ package com.example.finalproject
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -48,6 +49,7 @@ class MainActivity : AppCompatActivity() {
 
     var score : Int = 0
     var lives : Int = 3
+    var chronometerStartTime : Long = 0
 
 
     companion object {
@@ -76,6 +78,10 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+
+        val prefs = getSharedPreferences("finalProjectPrefs", MODE_PRIVATE)
+        prefs.edit().putLong("startTime", SystemClock.elapsedRealtime()).apply()
+        chronometerStartTime = SystemClock.elapsedRealtime()
 
         gameView = GameView(this, 4, this)
         radius = gameView.radius

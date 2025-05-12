@@ -22,8 +22,8 @@ class StartActivity : AppCompatActivity() {
         startButton.setOnClickListener {
             val playerName = nameEditText.text.toString()
             if (playerName.isNotEmpty()) {
-                //val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
-                //prefs.edit().putString("playerName", playerName).apply()
+                val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
+                prefs.edit().putString("playerName", playerName).apply()
 
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
