@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class Berzerk(
     private val main: MainActivity,
-    private val enemyRects: List<RectF>,
+    private val enemyRects: List<Pair<RectF, Int>>,
     private val gameBitmap: Bitmap,
     private val width : Int,
     private val height : Int,
@@ -29,6 +29,8 @@ class Berzerk(
     var bulletonScreen = true
 
     var angle = 0.0
+
+    var hitList = arrayListOf(0)
 
     fun update() {
         movePlayer()
@@ -58,7 +60,7 @@ class Berzerk(
         }
     }
 
-    fun playerCollisions(): Boolean {
+    fun playerCollisions() {
 
         val x = main.xPos.toInt()
         val y = main.yPos.toInt()
@@ -97,8 +99,14 @@ class Berzerk(
 
                         Color.RED -> {
                             Log.d("MainActivity", "Collision with enemy at ($px, $py)")
-                            // Handle enemy hit logic
-                            return true
+                            main.xPos = 100f
+                            main.bulletx = 100f
+                            main.xReq = 100f
+                            main.bulletxReq = 100f
+                            main.yPos = 123f
+                            main.bullety = 123f
+                            main.yReq = 123f
+                            main.bulletyReq = 123f
                         }
 
                         Color.BLUE -> {
@@ -134,10 +142,10 @@ class Berzerk(
                 }
             }
         }
-        return false
     }
 
-    fun playerBulletCollisions(): Boolean {
+    fun playerBulletCollisions() {
+
 
         val x = main.bulletx.toInt()
         val y = main.bullety.toInt()
@@ -171,9 +179,18 @@ class Berzerk(
                         }
 
                         Color.RED -> {
-                            Log.d("MainActivity", "Collision with enemy at ($px, $py)")
-                            // Handle enemy hit logic
-                            return true
+                            for ((rect, positionID) in enemyRects) {
+                                if (rect.contains(px.toFloat(), py.toFloat())) {
+                                    hitList.add(positionID)
+                                    main.bulletx = main.xPos
+                                    main.bullety = main.yPos
+                                    main.bulletxReq = main.xPos
+                                    main.bulletyReq = main.yPos
+                                    main.fired = false
+
+                                }
+
+                            }
                         }
 
 
@@ -183,7 +200,6 @@ class Berzerk(
                 }
             }
         }
-        return false
     }
 
     fun printColis(): Boolean {

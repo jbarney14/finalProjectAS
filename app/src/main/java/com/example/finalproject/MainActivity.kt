@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 fired = true
+                Log.w("MainActivity", fired.toString())
                 bulletx = xPos
                 bullety = yPos
                 bulletxReq = e.x
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startGameView2() {
-        setContentView(GameView2(this, 4, this))
+        setContentView(gameView2)
     }
 
     fun updateModel() {
