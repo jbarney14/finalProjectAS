@@ -29,11 +29,16 @@ class MainActivity : AppCompatActivity() {
     var bulletxReq = 100f
     var bulletyReq = 123f
 
+    var bulletOriginX = 0f
+    var bulletOriginY = 0f
+
     var radius = 37f
 
     var fired = false
 
     var onLevel2 = false
+
+    var playerHasMoved = false
 
     companion object {
         var instance: MainActivity? = null
@@ -55,6 +60,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                playerHasMoved = true
                 xReq = e.x
                 yReq = e.y - 136
                 return true
@@ -106,7 +112,7 @@ class MainActivity : AppCompatActivity() {
     fun setTimer() {
         val timer = Timer()
         val task = GameTimerTask( this )
-        timer.schedule( task, 0, 16)
+        timer.schedule( task, 0, 3)
     }
 
     fun getPlayerX() : Float {
@@ -119,9 +125,9 @@ class MainActivity : AppCompatActivity() {
 
     fun restartGame() {
         xPos = 100f
-        yPos = 259f
+        yPos = 123f
         xReq = 100f
-        yReq = 259f
+        yReq = 123f
 
         gameView = GameView(this, 4, this)
         setContentView(gameView)

@@ -13,8 +13,7 @@ class Berzerk(
     private val main: MainActivity,
     private val enemyRects: List<Pair<RectF, Int>>,
     private val gameBitmap: Bitmap,
-    private val width : Int,
-    private val height : Int,
+
     /*
     // Flag to determine what level player is on, so reaching the goal leads to level 2 or the finish screen
     private var level2 : Boolean = false
@@ -28,19 +27,42 @@ class Berzerk(
 
     var bulletonScreen = true
 
+    var enemyShoot = false
+
     var angle = 0.0
 
     var hitList = arrayListOf(0)
+
+    val enemyCooldown = mutableMapOf<Int, Int>()  // positionID -> cooldown frames
+
+    val enemyBulletX = FloatArray(10) { 0f }
+    val enemyBulletY = FloatArray(10) { 0f }
+    val enemyBulletXReq = FloatArray(10) { 0f }
+    val enemyBulletYReq = FloatArray(10) { 0f }
+    val enemyBulletActive = BooleanArray(10) { false }
+
+    init {
+        for ((rect, positionID) in enemyRects) {
+            enemyCooldown[positionID] = 0
+        }
+    }
+
 
     fun update() {
         movePlayer()
         playerCollisions()
         playerBulletCollisions()
+        enemyBulletCollisions()
         printColis()
-        shoot()
+        playerShoot()
+        enemyShoot()
+        moveEnemyBullet()
     }
 
     fun movePlayer() {
+
+        // Log.w("MainActivity", main.xPos.toString() + ", " +  main.yPos.toString())
+
         val dx = main.xReq - main.xPos
         val dy = main.yReq - main.yPos
         val dist = Math.hypot(dx.toDouble(), dy.toDouble())
@@ -49,7 +71,7 @@ class Berzerk(
         delayInMillis = (delayInSeconds * 1000).toLong()
 
 
-        val speed = 20f
+        val speed = 5f
         if (dist > speed) {
             angle = Math.atan2(dy.toDouble(), dx.toDouble())
             main.xPos += (Math.cos(angle) * speed).toFloat()
@@ -85,15 +107,15 @@ class Berzerk(
                     when (color) {
                         Color.LTGRAY -> {
                             Log.d("MainActivity", "Collision with wall at ($px, $py)")
-                                main.xPos = 100f
-                                main.bulletx = 100f
-                                main.xReq = 100f
-                                main.bulletxReq = 100f
-                                main.yPos = 123f
-                                main.bullety = 123f
-                                main.yReq = 123f
-                                main.bulletyReq = 123f
-                                colis = true
+                            main.xPos = 100f
+                            main.bulletx = 100f
+                            main.xReq = 100f
+                            main.bulletxReq = 100f
+                            main.yPos = 123f
+                            main.bullety = 123f
+                            main.yReq = 123f
+                            main.bulletyReq = 123f
+                            colis = true
 
                         }
 
@@ -202,8 +224,55 @@ class Berzerk(
         }
     }
 
+    fun enemyBulletCollisions() {
+        for (i in enemyBulletX.indices) {
+            if (enemyBulletActive[i]) {
+                val bulletX = enemyBulletX[i].toInt()
+                val bulletY = enemyBulletY[i].toInt()
+
+                // Check if the bullet is within the bounds of the game world
+                if (bulletX in 0 until gameBitmap.width && bulletY in 0 until gameBitmap.height) {
+                    try {
+                        // Get the color of the pixel where the bullet is
+                        val color = gameBitmap.getPixel(bulletX, bulletY)
+
+                        when (color) {
+                            Color.LTGRAY -> {
+                                enemyBulletActive[i] = false
+                                // Handle collision with light gray color (e.g., background)
+                                // Perform necessary actions like stopping the bullet, or destroying an object
+                            }
+                            Color.GREEN -> {
+                                // Deactivate all enemy bullets
+                                for (i in enemyBulletActive.indices) {
+                                    enemyBulletActive[i] = false  // Stop all active enemy bullets
+                                }
+
+                                // Reset the player position and other properties
+                                main.xPos = 100f
+                                main.yPos = 123f
+                                main.xReq = 100f
+                                main.yReq = 123f
+
+                                // Flag that the player hasn't moved yet
+                                main.playerHasMoved = false
+
+                                // Optional: Reset any other game state here (score, health, etc.)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // Handle any potential errors gracefully, e.g., out-of-bounds
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+    }
+
+
+
     fun printColis(): Boolean {
-        if(colis) {
+        if (colis) {
             colis = false
             return true
         } else {
@@ -211,29 +280,95 @@ class Berzerk(
         }
     }
 
-    fun shoot() {
-        if(main.fired) {
+    fun playerShoot() {
+        if (main.fired) {
 
-                val dx = main.bulletxReq - main.xPos
-                val dy = main.bulletyReq - main.yPos
-                val dist = Math.hypot(dx.toDouble(), dy.toDouble())
+            val dx = main.bulletxReq - main.xPos
+            val dy = main.bulletyReq - main.yPos
+            val dist = Math.hypot(dx.toDouble(), dy.toDouble())
 
-                val delayInSeconds = dist / 400f
-                delayInMillis = (delayInSeconds * 1000).toLong()
+            val speed = 5f
+            if (dist > speed) {
+                val angle = Math.atan2(dy.toDouble(), dx.toDouble())
+                main.bulletx += (Math.cos(angle) * speed).toFloat()
+                main.bullety += (Math.sin(angle) * speed).toFloat()
+            } else {
+                main.bulletx = main.bulletxReq
+                main.bullety = main.bulletyReq
+            }
+        }
+    }
 
-                val speed = 20f
-                if (dist > speed) {
-                    val angle = Math.atan2(dy.toDouble(), dx.toDouble())
-                    main.bulletx += (Math.cos(angle) * speed).toFloat()
-                    main.bullety += (Math.sin(angle) * speed).toFloat()
-                } else {
-                    main.bulletx = main.bulletxReq
-                    main.bullety = main.bulletyReq
+    fun enemyShoot() {
+        if (main.playerHasMoved) {
+            for ((rect, positionID) in enemyRects) {
+
+                if (positionID in hitList) continue
+
+                // Update cooldown timer
+                val currentCooldown = enemyCooldown.getOrDefault(positionID, 0)
+                if (currentCooldown > 0) {
+                    enemyCooldown[positionID] = currentCooldown - 1
+                    continue  // Skip shooting this enemy
+                }
+
+                val Xcenter = rect.right - main.radius
+                val Ycenter = rect.bottom - main.radius
+
+                if (main.xPos > rect.left && main.xPos < rect.right) {
+                    // Fire a bullet
+                    for (i in enemyBulletActive.indices) {
+                        if (!enemyBulletActive[i]) {
+                            enemyBulletX[i] = Xcenter
+                            enemyBulletY[i] = Ycenter
+                            enemyBulletXReq[i] = main.xPos
+                            enemyBulletYReq[i] = main.yPos
+                            enemyBulletActive[i] = true
+
+                            enemyCooldown[positionID] = 300  // Cooldown for 1 second at 60 FPS
+                            break
+                        }
+                    }
+                } else if (main.yPos > rect.top && main.yPos < rect.bottom) {
+                    for (i in enemyBulletActive.indices) {
+                        if (!enemyBulletActive[i]) {
+                            enemyBulletX[i] = Xcenter
+                            enemyBulletY[i] = Ycenter
+                            enemyBulletXReq[i] = main.xPos
+                            enemyBulletYReq[i] = main.yPos
+                            enemyBulletActive[i] = true
+
+                            enemyCooldown[positionID] = 300  // Cooldown for 1 second at 60 FPS
+                            break
+                        }
+                    }
                 }
             }
+        }
+    }
 
+
+        fun moveEnemyBullet() {
+            val speed = 3f
+            for (i in enemyBulletActive.indices) {
+                if (enemyBulletActive[i]) {
+                    val dx = enemyBulletXReq[i] - enemyBulletX[i]
+                    val dy = enemyBulletYReq[i] - enemyBulletY[i]
+                    val dist = Math.hypot(dx.toDouble(), dy.toDouble())
+
+                    if (dist > speed) {
+                        val angle = Math.atan2(dy.toDouble(), dx.toDouble())
+                        enemyBulletX[i] += (Math.cos(angle) * speed).toFloat()
+                        enemyBulletY[i] += (Math.sin(angle) * speed).toFloat()
+                    } else {
+                        // Bullet reached destination, deactivate
+                        enemyBulletActive[i] = false
+                    }
+                }
+            }
         }
 
-}
+    }
+
 
 

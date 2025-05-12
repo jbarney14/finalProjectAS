@@ -38,7 +38,7 @@ class GameView2 : View {
         gameBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         gameCanvas = Canvas(gameBitmap)
 
-        berzerk = Berzerk(main, enemyRects, gameBitmap, width, height)
+        berzerk = Berzerk(main, enemyRects, gameBitmap)
     }
 
     /*
@@ -53,7 +53,7 @@ class GameView2 : View {
         gameBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         gameCanvas = Canvas(gameBitmap)
 
-        berzerk = Berzerk(main, enemyRects, gameBitmap, width, height)
+        berzerk = Berzerk(main, enemyRects, gameBitmap)
         //main.setTimer()
     }
 
@@ -166,6 +166,14 @@ class GameView2 : View {
         if(main.fired) {
             paint.color = Color.GREEN
             gameCanvas.drawCircle(main.bulletx, main.bullety, radius / 2, paint)
+        }
+
+        //enemy bullet
+        for (i in berzerk.enemyBulletActive.indices) {
+            if (berzerk.enemyBulletActive[i]) {
+                paint.color = Color.RED
+                gameCanvas.drawCircle(berzerk.enemyBulletX[i], berzerk.enemyBulletY[i], radius / 2, paint)
+            }
         }
 
 

@@ -42,7 +42,7 @@ class GameView : View {
         gameBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         gameCanvas = Canvas(gameBitmap)
 
-        berzerk = Berzerk(main, enemyRects, gameBitmap, width, height)
+        berzerk = Berzerk(main, enemyRects, gameBitmap)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -122,6 +122,13 @@ class GameView : View {
             }
 
 
+        //enemy bullet
+        for (i in berzerk.enemyBulletActive.indices) {
+            if (berzerk.enemyBulletActive[i]) {
+                paint.color = Color.RED
+                gameCanvas.drawCircle(berzerk.enemyBulletX[i], berzerk.enemyBulletY[i], radius / 2, paint)
+            }
+        }
 
 
         //enemies - random spawn
