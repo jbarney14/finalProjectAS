@@ -94,12 +94,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun updateModel() {
-        if (onLevel2 == false) {
-            var game = gameView.getGame()
-            game.update()
-        } else {
-            val game2 = gameView2.getGame()
-            game2.update()
+        if (!playerGameOver) {
+            if (onLevel2 == false) {
+                var game = gameView.getGame()
+                game.update()
+            } else {
+                val game2 = gameView2.getGame()
+                game2.update()
+            }
         }
     }
 
