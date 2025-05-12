@@ -12,6 +12,7 @@ import com.google.android.material.snackbar.Snackbar
 import android.widget.Toast
 import android.content.Intent
 import android.os.SystemClock
+import android.util.Log
 import android.widget.Button
 import android.widget.Chronometer
 import com.google.firebase.database.*
@@ -104,7 +105,14 @@ class GameOverActivity : AppCompatActivity() {
             prefs.edit().putInt("lastRating", playerRating).apply()
 
             val playerRef = FirebaseDatabase.getInstance().getReference("Leaderboard").child(playerName)
-            playerRef.child("rating").setValue(playerRating)
+            playerRef.child("highScore").get().addOnSuccessListener { snapshot ->
+                if (!snapshot.exists()) {
+                    playerRef.child("highScore").setValue(0)
+                    playerRef.child("timeForHighScore").setValue(0)
+                }
+                playerRef.child("rating").setValue(playerRating)
+                Log.d("FirebaseDebug", "Rating set for $playerName = $playerRating")
+            }
 
 
         }
@@ -147,6 +155,7 @@ class GameOverActivity : AppCompatActivity() {
     private fun uploadGameStatsToFirebase() {
         val db = FirebaseDatabase.getInstance().getReference("Leaderboard")
         val playerRef = db.child(playerName)
+        Log.d("FirebaseDebug", "Inside updateData, player: $playerName")
 
         playerRef.child("highScore").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -154,6 +163,7 @@ class GameOverActivity : AppCompatActivity() {
                 if (finalScore > existingHighScore) {
                     playerRef.child("highScore").setValue(finalScore)
                     playerRef.child("timeForHighScore").setValue(timePlayed)
+                    Log.d("FirebaseDebug", "Player: $playerName Score:$finalScore")
                 }
             }
 

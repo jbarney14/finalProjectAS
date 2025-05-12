@@ -14,6 +14,7 @@ class StartActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.google.firebase.FirebaseApp.initializeApp(this)
         setContentView(R.layout.activity_start)
 
         nameEditText = findViewById(R.id.nameEditText)
