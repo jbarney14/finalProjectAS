@@ -37,7 +37,7 @@ class GameOverActivity : AppCompatActivity() {
 
         val tapText = findViewById<TextView>(R.id.tapToReplay)
         val ratingBar = findViewById<RatingBar>(R.id.ratingBar)
-        val submitButton = findViewById<Button>(R.id.submitButton)
+
         tapText.setOnClickListener {
             MainActivity.instance?.restartGame()
             finish()
@@ -45,9 +45,9 @@ class GameOverActivity : AppCompatActivity() {
 
         val rootLayout = findViewById<LinearLayout>(R.id.rootLayout)
 
-        submitButton.setOnClickListener {
-            val rating = ratingBar.rating.toInt()
-            val recipients = arrayOf("testmyapp@gmail.com")
+        ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
+
+            val recipients = arrayOf("berzerkappteam@gmail.com")
 
             val emailIntent = Intent(Intent.ACTION_SEND)
             emailIntent.setType("text/plain")
@@ -57,8 +57,8 @@ class GameOverActivity : AppCompatActivity() {
 
             startActivity(Intent.createChooser(emailIntent, "Send Feedback Email"))
 
-            Snackbar.make(rootLayout, "Thank you! Rating submitted.", Snackbar.LENGTH_SHORT).show()
-            //ratingBar.isEnabled = false
+            Snackbar.make(rootLayout, "Thank you! You rated $rating stars.", Snackbar.LENGTH_SHORT).show()
+            ratingBar.isEnabled = false
             //submitButton.isEnabled = false
         }
 
