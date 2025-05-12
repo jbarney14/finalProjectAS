@@ -15,6 +15,8 @@ import android.widget.Button
 
 class GameOverActivity : AppCompatActivity() {
 
+    private var showSnackbarAfterEmail = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game_over)
@@ -37,13 +39,14 @@ class GameOverActivity : AppCompatActivity() {
 
         val tapText = findViewById<TextView>(R.id.tapToReplay)
         val ratingBar = findViewById<RatingBar>(R.id.ratingBar)
+        ratingBar.rating = 0f
 
         tapText.setOnClickListener {
             MainActivity.instance?.restartGame()
             finish()
         }
 
-        val rootLayout = findViewById<LinearLayout>(R.id.rootLayout)
+        //val rootLayout = findViewById<LinearLayout>(R.id.rootLayout)
 
         ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
 
@@ -57,11 +60,21 @@ class GameOverActivity : AppCompatActivity() {
 
             startActivity(Intent.createChooser(emailIntent, "Send Feedback Email"))
 
-            Snackbar.make(rootLayout, "Thank you! You rated $rating stars.", Snackbar.LENGTH_SHORT).show()
+            showSnackbarAfterEmail = true
+            //Snackbar.make(rootLayout, "Thank you! You rated $rating stars.", Snackbar.LENGTH_SHORT).show()
             ratingBar.isEnabled = false
             //submitButton.isEnabled = false
         }
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (showSnackbarAfterEmail) {
+            showSnackbarAfterEmail = false
+            val rootLayout = findViewById<LinearLayout>(R.id.rootLayout)
+            Snackbar.make(rootLayout, "Thank you! Your feedback was sent.", Snackbar.LENGTH_SHORT).show()
+        }
     }
 }
