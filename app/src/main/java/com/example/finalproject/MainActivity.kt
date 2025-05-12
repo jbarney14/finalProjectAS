@@ -1,17 +1,17 @@
 package com.example.finalproject
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.util.Timer
+import java.util.TimerTask
 
 class MainActivity : AppCompatActivity() {
 
@@ -31,38 +31,37 @@ class MainActivity : AppCompatActivity() {
     var bulletxReq = 100f
     var bulletyReq = 123f
 
+    var bulletOriginX = 0f
+    var bulletOriginY = 0f
+
     var radius = 37f
 
     var fired = false
 
     var onLevel2 = false
 
+    var playerHasMoved = false
+
+    var playerGameWon : Boolean = false
+    var playerGameOver : Boolean = false
+    var isTransitioning : Boolean = false
+
+    var score : Int = 0
+    var lives : Int = 3
+
+
     companion object {
-        var highScore: Int = 0
-        var score: Int = 0
-
-        private lateinit var sharedPreferences: SharedPreferences
-        lateinit var editor: SharedPreferences.Editor
-
-        fun initializePreferences(context: Context) {
-            sharedPreferences = context.getSharedPreferences("high_score", Context.MODE_PRIVATE)
-            editor = sharedPreferences.edit()
-        }
+        var instance: MainActivity? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        /*
-        editor.putInt("best_level", 0)
-        editor.commit()
-        */
-        initializePreferences(this)
-        highScore = MainActivity.sharedPreferences.getInt("high_score", 0)
+        instance = this
 
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
                 fired = true
+                Log.w("MainActivity", fired.toString())
                 bulletx = xPos
                 bullety = yPos
                 bulletxReq = e.x
@@ -71,6 +70,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSingleTapConfirmed(e: MotionEvent): Boolean {
+                playerHasMoved = true
                 xReq = e.x
                 yReq = e.y - 136
                 return true
@@ -93,16 +93,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun startGameView2() {
-        setContentView(GameView2(this, 4, this))
+        setContentView(gameView2)
+        isTransitioning = false
     }
 
     fun updateModel() {
-        if (onLevel2 == false) {
-            var game = gameView.getGame()
-            game.update()
-        } else {
-            val game2 = gameView2.getGame()
-            game2.update()
+        if (!playerGameOver) {
+            if (onLevel2 == false) {
+                var game = gameView.getGame()
+                game.update()
+            } else {
+                val game2 = gameView2.getGame()
+                game2.update()
+            }
         }
     }
 
@@ -119,10 +122,12 @@ class MainActivity : AppCompatActivity() {
         setTimer()
     }
 
+    var gameTimer: Timer? = null
     fun setTimer() {
-        val timer = Timer()
+        gameTimer?.cancel()
+        gameTimer = Timer()
         val task = GameTimerTask( this )
-        timer.schedule( task, 0, 16)
+        gameTimer!!.schedule( task, 0, 1)
     }
 
     fun getPlayerX() : Float {
@@ -134,19 +139,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun restartGame() {
+        gameTimer?.cancel()
         xPos = 100f
-        yPos = 259f
+        yPos = 123f
         xReq = 100f
-        yReq = 259f
+        yReq = 123f
+        isTransitioning = false
+        onLevel2 = false
+        playerGameWon = false
+        playerGameOver = false
 
         gameView = GameView(this, 4, this)
         setContentView(gameView)
-        setTimer()
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                runOnUiThread {
+                    setTimer()
+                }
+            }
+        }, 200)
     }
 
     fun showGameOverScreen() {
-        val gameOverView = GameView3(this, this)
-        setContentView(gameOverView)
+        val intent = Intent(this, GameOverActivity::class.java)
+        startActivity(intent)
     }
 
     /*

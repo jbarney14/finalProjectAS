@@ -18,7 +18,7 @@ class GameView : View {
     private var enemies = 0
     val spawners = arrayListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
     var spawnOnce = 1
-    var enemyRects = CopyOnWriteArrayList<RectF>()
+    val enemyRects = mutableListOf<Pair<RectF, Int>>()
     val enemyPositions = mutableListOf<Array<Int>>()
     val radius = 37f
 
@@ -42,7 +42,7 @@ class GameView : View {
         gameBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
         gameCanvas = Canvas(gameBitmap)
 
-        berzerk = Berzerk(main, enemyRects, gameBitmap, width, height)
+        berzerk = Berzerk(main, enemyRects, gameBitmap)
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -122,6 +122,13 @@ class GameView : View {
             }
 
 
+        //enemy bullet
+        for (i in berzerk.enemyBulletActive.indices) {
+            if (berzerk.enemyBulletActive[i]) {
+                paint.color = Color.RED
+                gameCanvas.drawCircle(berzerk.enemyBulletX[i], berzerk.enemyBulletY[i], radius / 2, paint)
+            }
+        }
 
 
         //enemies - random spawn
@@ -134,25 +141,22 @@ class GameView : View {
         }
 
         for (coords in enemyPositions) {
-            // If that enemy isn't hit yet, we draw it again on this refresh
-            if (coords[2] == 0) {
-                var enemyRect = RectF(
-                    coords[0] - radius, coords[1] - radius,
-                    coords[0] + radius, coords[1] + radius
-                )
-                if (!enemyRects.contains(enemyRect)) {
-                    enemyRects.add(enemyRect)
-                }
-                paint.color = Color.RED
+            var enemyRect = RectF(coords[0] - radius, coords[1] - radius,
+                coords[0] + radius, coords[1] + radius)
+            if (enemyRects.none { it.first == enemyRect }) {
+                enemyRects.add(Pair(enemyRect, coords[2]))
+            }
+            paint.color = Color.RED
+            if(!berzerk.hitList.contains(coords[2])) {
                 gameCanvas.drawCircle(coords[0].toFloat(), coords[1].toFloat(), radius, paint)
             }
+
         }
 
         canvas.drawBitmap(gameBitmap, 0f, 0f, null)
     }
 
     fun spawnEnemies(): Array<Int> {
-            // arrayOf(x, y, isHit)
             var enemyCoordinates = arrayOf(0, 0, 0)
             spawnOnce = 2
             val randomNumber = spawners.random() //spawner place on map
@@ -162,23 +166,27 @@ class GameView : View {
                     enemyCoordinates[0] =
                         (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
                     enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
+                    enemyCoordinates[2] = 1
                 }
 
                 2 -> {
                     enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
                     enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
+                    enemyCoordinates[2] = 2
                 }
 
                 3 -> {
                     enemyCoordinates[0] =
                         (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
                     enemyCoordinates[1] = resources.displayMetrics.heightPixels / (8 / 1.5).toInt()
+                    enemyCoordinates[2] = 3
                 }
 
                 4 -> {
                     enemyCoordinates[0] =
                         (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
                     enemyCoordinates[1] = resources.displayMetrics.heightPixels / 2
+                    enemyCoordinates[2] = 4
                 }
 
                 5 -> {
@@ -186,12 +194,14 @@ class GameView : View {
                         (resources.displayMetrics.widthPixels / (4.0 / 3.5)).toInt()
                     enemyCoordinates[1] =
                         (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+                    enemyCoordinates[2] = 5
                 }
 
                 6 -> {
                     enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
                     enemyCoordinates[1] =
                         (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+                    enemyCoordinates[2] = 6
                 }
 
                 7 -> {
@@ -199,24 +209,28 @@ class GameView : View {
                         (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
                     enemyCoordinates[1] =
                         (resources.displayMetrics.heightPixels / (6.0 / 5.5)).toInt()
+                    enemyCoordinates[2] = 7
                 }
 
                 8 -> {
                     enemyCoordinates[0] =
                         (resources.displayMetrics.widthPixels / (4.0 / .5)).toInt()
                     enemyCoordinates[1] = resources.displayMetrics.heightPixels / 2
+                    enemyCoordinates[2] = 8
                 }
 
                 9 -> {
                     enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
                     enemyCoordinates[1] =
                         (resources.displayMetrics.heightPixels / (4.0 / 1.5) - 100).toInt()
+                    enemyCoordinates[2] = 9
                 }
 
                 10 -> {
                     enemyCoordinates[0] = resources.displayMetrics.widthPixels / 2
                     enemyCoordinates[1] =
                         (resources.displayMetrics.heightPixels / (4.0 / 3.5) - 300).toInt()
+                    enemyCoordinates[2] = 10
                 }
             }
 
