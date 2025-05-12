@@ -14,7 +14,7 @@ class Berzerk(
     private val enemyRects: List<RectF>,
     private val gameBitmap: Bitmap,
     private val width : Int,
-    private val height : Int,
+    private val height : Int
     /*
     // Flag to determine what level player is on, so reaching the goal leads to level 2 or the finish screen
     private var level2 : Boolean = false
@@ -82,6 +82,7 @@ class Berzerk(
                     val color = gameBitmap.getPixel(px, py)
                     when (color) {
                         Color.LTGRAY -> {
+                            // Game ends if wall is touched
                             Log.d("MainActivity", "Collision with wall at ($px, $py)")
                                 main.xPos = 100f
                                 main.bulletx = 100f
@@ -93,11 +94,28 @@ class Berzerk(
                                 main.bulletyReq = 123f
                                 colis = true
 
+                            if (MainActivity.score > MainActivity.highScore) {
+                                MainActivity.highScore = MainActivity.highScore
+                                MainActivity.editor.putInt("high_score", MainActivity.highScore).apply()
+                                Log.w("Berzerk", "The new high score is: ${MainActivity.highScore}")
+                            }
+
                         }
 
+                        // Game ends if enemy is touched
                         Color.RED -> {
                             Log.d("MainActivity", "Collision with enemy at ($px, $py)")
                             // Handle enemy hit logic
+
+                            // Loop every enemy in Main
+                            // Figure out which one was hit
+                            // Set isHit to 1
+
+                            if (MainActivity.score > MainActivity.highScore) {
+                                //MainActivity.highScore = MainActivity.highScore
+                                MainActivity.editor.putInt("high_score", MainActivity.highScore).apply()
+                                Log.w("Berzerk", "The new high score is: ${MainActivity.highScore}")
+                            }
                             return true
                         }
 
@@ -120,13 +138,18 @@ class Berzerk(
 
                                 colis = true
                                 main.onLevel2 = true
-
                                 // Return value?
+
                             } else {
                                 // Go to game won screen
+
+                                if (MainActivity.score > MainActivity.highScore) {
+                                    MainActivity.highScore = MainActivity.highScore
+                                    MainActivity.editor.putInt("high_score", MainActivity.highScore).apply()
+                                    Log.w("Berzerk", "The new high score is: ${MainActivity.highScore}")
+                                }
+
                             }
-
-
                         }
                     }
                 } catch (e: Exception) {
@@ -168,11 +191,14 @@ class Berzerk(
                             main.bulletyReq = main.yPos
                             main.fired = false
                             bulletonScreen = false
+
                         }
 
                         Color.RED -> {
                             Log.d("MainActivity", "Collision with enemy at ($px, $py)")
                             // Handle enemy hit logic
+                            MainActivity.score += 1
+
                             return true
                         }
 

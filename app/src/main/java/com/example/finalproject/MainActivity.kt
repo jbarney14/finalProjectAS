@@ -1,6 +1,8 @@
 package com.example.finalproject
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
@@ -35,8 +37,28 @@ class MainActivity : AppCompatActivity() {
 
     var onLevel2 = false
 
+    companion object {
+        var highScore: Int = 0
+        var score: Int = 0
+
+        private lateinit var sharedPreferences: SharedPreferences
+        lateinit var editor: SharedPreferences.Editor
+
+        fun initializePreferences(context: Context) {
+            sharedPreferences = context.getSharedPreferences("high_score", Context.MODE_PRIVATE)
+            editor = sharedPreferences.edit()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        /*
+        editor.putInt("best_level", 0)
+        editor.commit()
+        */
+        initializePreferences(this)
+        highScore = MainActivity.sharedPreferences.getInt("high_score", 0)
 
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {

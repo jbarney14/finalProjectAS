@@ -134,21 +134,26 @@ class GameView : View {
         }
 
         for (coords in enemyPositions) {
-            var enemyRect = RectF(coords[0] - radius, coords[1] - radius,
-                coords[0] + radius, coords[1] + radius)
-            if(!enemyRects.contains(enemyRect)) {
-                enemyRects.add(enemyRect)
+            // If that enemy isn't hit yet, we draw it again on this refresh
+            if (coords[2] == 0) {
+                var enemyRect = RectF(
+                    coords[0] - radius, coords[1] - radius,
+                    coords[0] + radius, coords[1] + radius
+                )
+                if (!enemyRects.contains(enemyRect)) {
+                    enemyRects.add(enemyRect)
+                }
+                paint.color = Color.RED
+                gameCanvas.drawCircle(coords[0].toFloat(), coords[1].toFloat(), radius, paint)
             }
-            paint.color = Color.RED
-            gameCanvas.drawCircle(coords[0].toFloat(), coords[1].toFloat(), radius, paint)
-
         }
 
         canvas.drawBitmap(gameBitmap, 0f, 0f, null)
     }
 
     fun spawnEnemies(): Array<Int> {
-            var enemyCoordinates = arrayOf(0, 0)
+            // arrayOf(x, y, isHit)
+            var enemyCoordinates = arrayOf(0, 0, 0)
             spawnOnce = 2
             val randomNumber = spawners.random() //spawner place on map
 
