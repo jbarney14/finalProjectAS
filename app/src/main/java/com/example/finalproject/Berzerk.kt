@@ -127,6 +127,9 @@ class Berzerk(
                                 colis = true
                             }
                             main.playerHasMoved = false
+
+                            highScoreUpdate()
+
                         }
 
                         Color.RED -> {
@@ -147,6 +150,9 @@ class Berzerk(
                             }
 
                             main.playerHasMoved = false
+
+                            highScoreUpdate()
+
                         }
 
                         Color.BLUE -> {
@@ -154,7 +160,7 @@ class Berzerk(
                             Log.w("Test", "OnLevel2= ${main.onLevel2}")
 
                             if (main.onLevel2 == false && !main.isTransitioning) {
-                                Log.w("Berzerk.kt", "Hit the blue end of game")
+
                                 main.isTransitioning = true
                                 main.runOnUiThread {
                                     main.startGameView2()
@@ -169,18 +175,24 @@ class Berzerk(
                                 main.yReq = 123f
                                 main.bulletyReq = 123f
                                 gonextlevel = true
-                                lives += 1
+                                lives = 3
                                 colis = true
                                 main.onLevel2 = true
                                 main.playerHasMoved = false
 
+                                Log.w("Berzerk", "Score after level 1 is: ${main.score}")
+                                // Already on level 2 so the player won
                                 // Return value?
                             } else if (main.onLevel2 && !main.isTransitioning){
                                 // Go to game won screen
+                                Log.w("Berzerk", "Hit the blue end of game")
                                 colis = true
                                 main.isTransitioning = true
                                 main.playerGameWon = true
                                 main.playerGameOver = true
+
+                                highScoreUpdate()
+
                                 main.runOnUiThread {
                                     main.showGameOverScreen()
                                 }
@@ -193,6 +205,15 @@ class Berzerk(
                     Log.e("MainActivity", "Error reading pixel: ${e.message}")
                 }
             }
+        }
+    }
+
+    fun highScoreUpdate () {
+        if (main.score > MainActivity.highScore) {
+            MainActivity.newHigh = true
+            MainActivity.highScore = main.score
+            MainActivity.editor.putInt("high_score", MainActivity.highScore).apply()
+            Log.w("Berzerk", "in highScoreUpdate: The new high score is: ${MainActivity.highScore}")
         }
     }
 
@@ -233,6 +254,11 @@ class Berzerk(
                         Color.RED -> {
                             for ((rect, positionID) in enemyRects) {
                                 if (rect.contains(px.toFloat(), py.toFloat())) {
+                                    if (!hitList.contains(positionID)) {
+                                        main.score += 1
+                                        Log.w("Berzerk", "Enemy hit, the score is now ${main.score}")
+                                    }
+
                                     hitList.add(positionID)
                                     main.bulletx = main.xPos
                                     main.bullety = main.yPos

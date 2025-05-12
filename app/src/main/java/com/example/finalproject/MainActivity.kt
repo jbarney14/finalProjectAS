@@ -1,6 +1,8 @@
 package com.example.finalproject
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.SystemClock
 import android.util.Log
@@ -13,6 +15,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.util.Timer
 import java.util.TimerTask
+
+// Jake Barney, Zijun Li, Nathan Mitchell
 
 class MainActivity : AppCompatActivity() {
 
@@ -48,17 +52,42 @@ class MainActivity : AppCompatActivity() {
     var isTransitioning : Boolean = false
 
     var score : Int = 0
+    var newHigh: Boolean = false
     var lives : Int = 3
     var chronometerStartTime : Long = 0
 
 
     companion object {
         var instance: MainActivity? = null
+
+        var newHigh: Boolean = false
+        var highScore: Int = 0
+        var colorScheme: String = "light"
+        //var score: Int = 0
+
+        private lateinit var sharedPreferences: SharedPreferences
+        lateinit var editor: SharedPreferences.Editor
+
+        fun initializePreferences(context: Context) {
+            sharedPreferences = context.getSharedPreferences("high_score", Context.MODE_PRIVATE)
+            editor = sharedPreferences.edit()
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         instance = this
+
+
+        initializePreferences(this)
+        highScore = sharedPreferences.getInt("high_score", 0)
+
+        Log.w("Berzerk", "Starting high score is $highScore")
+
+        /*
+        editor.putInt("high_score", 0)
+        editor.commit()
+         */
 
         gestureDetector = GestureDetector(this, object : GestureDetector.SimpleOnGestureListener() {
             override fun onDoubleTap(e: MotionEvent): Boolean {
@@ -92,6 +121,8 @@ class MainActivity : AppCompatActivity() {
 
         //Test Game Over Screen()
         //showGameOverScreen()
+
+
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -145,6 +176,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun restartGame() {
+        score = 0
+
         gameTimer?.cancel()
         xPos = 100f
         yPos = 123f

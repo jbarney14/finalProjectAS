@@ -37,6 +37,15 @@ class GameOverActivity : AppCompatActivity() {
         setContentView(R.layout.activity_game_over)
         if (MainActivity.instance!!.playerGameWon) {
             findViewById<TextView>(R.id.gameOverText).text = "YOU WON!!"
+            val highScore = MainActivity.highScore
+            findViewById<TextView>(R.id.highScore).text = "High Score is $highScore"
+
+            /*
+            if (MainActivity.newHigh) {
+
+            }
+
+             */
         }
 
         scoreTextView = findViewById<TextView>(R.id.scoreTextView)
