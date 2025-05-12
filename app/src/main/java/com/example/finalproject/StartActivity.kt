@@ -25,6 +25,8 @@ class StartActivity : AppCompatActivity() {
                 //val prefs = getSharedPreferences("GamePrefs", MODE_PRIVATE)
                 //prefs.edit().putString("playerName", playerName).apply()
 
+
+
                 val intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
