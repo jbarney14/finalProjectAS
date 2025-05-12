@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import java.util.Timer
+import java.util.TimerTask
 
 class MainActivity : AppCompatActivity() {
 
@@ -76,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         //setContentView(gameView2)
 
         //Test Game Over Screen()
-        //showGameOverScreen()
+        showGameOverScreen()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -110,10 +111,12 @@ class MainActivity : AppCompatActivity() {
         setTimer()
     }
 
+    var gameTimer: Timer? = null
     fun setTimer() {
-        val timer = Timer()
+        gameTimer?.cancel()
+        gameTimer = Timer()
         val task = GameTimerTask( this )
-        timer.schedule( task, 0, 1)
+        gameTimer!!.schedule( task, 0, 1)
     }
 
     fun getPlayerX() : Float {
@@ -125,6 +128,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun restartGame() {
+        gameTimer?.cancel()
         xPos = 100f
         yPos = 123f
         xReq = 100f
@@ -132,7 +136,13 @@ class MainActivity : AppCompatActivity() {
 
         gameView = GameView(this, 4, this)
         setContentView(gameView)
-        setTimer()
+        Timer().schedule(object : TimerTask() {
+            override fun run() {
+                runOnUiThread {
+                    setTimer()
+                }
+            }
+        }, 200)
     }
 
     fun showGameOverScreen() {

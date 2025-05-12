@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.google.android.material.snackbar.Snackbar
+import android.widget.Toast
+import android.content.Intent
+import android.widget.Button
 
 class GameOverActivity : AppCompatActivity() {
 
@@ -33,9 +37,31 @@ class GameOverActivity : AppCompatActivity() {
 
         val tapText = findViewById<TextView>(R.id.tapToReplay)
         val ratingBar = findViewById<RatingBar>(R.id.ratingBar)
+        val submitButton = findViewById<Button>(R.id.submitButton)
         tapText.setOnClickListener {
             MainActivity.instance?.restartGame()
             finish()
         }
+
+        val rootLayout = findViewById<LinearLayout>(R.id.rootLayout)
+
+        submitButton.setOnClickListener {
+            val rating = ratingBar.rating.toInt()
+            val recipients = arrayOf("testmyapp@gmail.com")
+
+            val emailIntent = Intent(Intent.ACTION_SEND)
+            emailIntent.setType("text/plain")
+            emailIntent.putExtra(Intent.EXTRA_EMAIL, recipients)
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Game Feedback - Player rating: $rating stars")
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "Hi, I just rated the game $rating stars.\n\nHere is my detailed feedback:\n")
+
+            startActivity(Intent.createChooser(emailIntent, "Send Feedback Email"))
+
+            Snackbar.make(rootLayout, "Thank you! Rating submitted.", Snackbar.LENGTH_SHORT).show()
+            //ratingBar.isEnabled = false
+            //submitButton.isEnabled = false
+        }
+
+
     }
 }
